@@ -74,11 +74,22 @@ Import [`postman_collection.json`](postman_collection.json) into Postman:
 1. Select **Import** and choose the collection file from this project.
 2. Open the **Go CRUD API** collection. Its `baseUrl` collection variable is
 	already set to `http://localhost:8080`.
-3. Open **Runner**, select the collection, and run all requests in order.
+3. Open **Runner**, select the `CRUD (keeps test user)` folder, and run its
+	requests in order. This creates a user and leaves it in MySQL after the
+	create, list, read, and update checks pass.
 
-The collection creates a user with a unique email, saves its ID, then lists,
-reads, updates, and deletes it. Each request checks its expected status and
-response; the final request confirms that the deleted user returns `404`.
+The `Cleanup (deletes test user)` folder contains the delete request and a
+follow-up check for `404 Not Found`. Run that folder only when you want to
+remove the test row. Running the whole collection also runs cleanup.
+
+To view saved rows from PowerShell, run:
+
+```powershell
+docker exec -it my-sql-container mysql -uroot -p myapp -e "SELECT id, name, email, created_at FROM users ORDER BY id DESC LIMIT 20;"
+```
+
+Enter the MySQL root password when prompted. The most recent test user should
+appear at the top of the results.
 
 ### 5. Send CRUD requests with PowerShell
 

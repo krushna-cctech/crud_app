@@ -12,7 +12,10 @@
   ],
   "item": [
     {
-      "name": "01 - Create user",
+      "name": "CRUD (keeps test user)",
+      "item": [
+        {
+          "name": "01 - Create user",
       "event": [
         {
           "listen": "prerequest",
@@ -60,8 +63,8 @@
         "url": "{{baseUrl}}/users"
       }
     },
-    {
-      "name": "02 - List users",
+        {
+          "name": "02 - List users",
       "event": [
         {
           "listen": "test",
@@ -84,8 +87,8 @@
         "url": "{{baseUrl}}/users"
       }
     },
-    {
-      "name": "03 - Get user",
+        {
+          "name": "03 - Get user",
       "event": [
         {
           "listen": "test",
@@ -106,8 +109,8 @@
         "url": "{{baseUrl}}/users/{{userId}}"
       }
     },
-    {
-      "name": "04 - Update user",
+        {
+          "name": "04 - Update user",
       "event": [
         {
           "listen": "test",
@@ -142,9 +145,14 @@
         },
         "url": "{{baseUrl}}/users/{{userId}}"
       }
+    }
+      ]
     },
     {
-      "name": "05 - Delete user",
+      "name": "Cleanup (deletes test user)",
+      "item": [
+        {
+          "name": "05 - Delete user",
       "event": [
         {
           "listen": "test",
@@ -161,8 +169,8 @@
         "url": "{{baseUrl}}/users/{{userId}}"
       }
     },
-    {
-      "name": "06 - Confirm deleted user is not found",
+        {
+          "name": "06 - Confirm deleted user is not found",
       "event": [
         {
           "listen": "test",
@@ -181,6 +189,8 @@
         "method": "GET",
         "url": "{{baseUrl}}/users/{{userId}}"
       }
+        }
+      ]
     }
   ]
 }
