@@ -1,0 +1,186 @@
+{
+  "info": {
+    "name": "Go CRUD API",
+    "description": "Sequential CRUD smoke test for the Go users API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Create user",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const uniqueEmail = 'postman-' + Date.now() + '-' + Math.floor(Math.random() * 1000000) + '@example.com';",
+              "pm.collectionVariables.set('testEmail', uniqueEmail);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201 Created', function () { pm.response.to.have.status(201); });",
+              "pm.test('returns a user and saves its ID', function () {",
+              "    const user = pm.response.json();",
+              "    pm.expect(user.id).to.be.a('number');",
+              "    pm.expect(user.name).to.eql('Postman Test User');",
+              "    pm.collectionVariables.set('userId', String(user.id));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Test User\",\n  \"email\": \"{{testEmail}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/users"
+      }
+    },
+    {
+      "name": "02 - List users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () { pm.response.to.have.status(200); });",
+              "pm.test('includes the created user', function () {",
+              "    const users = pm.response.json();",
+              "    const userId = pm.collectionVariables.get('userId');",
+              "    pm.expect(users).to.be.an('array');",
+              "    pm.expect(users.some(function (user) { return String(user.id) === userId; })).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/users"
+      }
+    },
+    {
+      "name": "03 - Get user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns the created user', function () {",
+              "    const user = pm.response.json();",
+              "    pm.expect(String(user.id)).to.eql(pm.collectionVariables.get('userId'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/users/{{userId}}"
+      }
+    },
+    {
+      "name": "04 - Update user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns the updated name', function () {",
+              "    const user = pm.response.json();",
+              "    pm.expect(user.name).to.eql('Updated Postman Test User');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Postman Test User\",\n  \"email\": \"{{testEmail}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/users/{{userId}}"
+      }
+    },
+    {
+      "name": "05 - Delete user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 204 No Content', function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/users/{{userId}}"
+      }
+    },
+    {
+      "name": "06 - Confirm deleted user is not found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 404 Not Found', function () { pm.response.to.have.status(404); });",
+              "pm.test('reports that the user is missing', function () {",
+              "    pm.expect(pm.response.text()).to.include('User not found');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/users/{{userId}}"
+      }
+    }
+  ]
+}
